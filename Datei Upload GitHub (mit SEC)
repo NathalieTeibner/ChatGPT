@@ -1,0 +1,169 @@
+<!DOCTYPE html> 
+
+<html lang="de"> 
+
+<head> 
+
+  <meta charset="UTF-8"> 
+
+  <title>Datei-Upload</title> 
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self';"> 
+
+  <style> 
+
+    body { font-family: Arial, sans-serif; margin: 2em; } 
+
+    #uploadForm { border: 1px solid #ccc; padding: 2em; border-radius: 5px; max-width: 400px; } 
+
+    .success { color: green; } 
+
+    .error { color: red; } 
+
+  </style> 
+
+</head> 
+
+<body> 
+
+  <h2>Datei-Upload</h2> 
+
+  <form id="uploadForm" enctype="multipart/form-data" autocomplete="off"> 
+
+    <input type="file" id="fileInput" name="file" required> 
+
+    <button type="submit">Hochladen</button> 
+
+    <p id="message"></p> 
+
+  </form> 
+
+  <script> 
+
+    // Konfiguration: Erlaubte MIME-Typen und Maximalgröße (z.B. 2 MB) 
+
+    const ALLOWED_TYPES = [ 
+
+      "image/jpeg", "image/png", "application/pdf", "text/plain" 
+
+    ]; 
+
+    const MAX_SIZE = 2 * 1024 * 1024; // 2 MB 
+
+ 
+
+    const form = document.getElementById('uploadForm'); 
+
+    const fileInput = document.getElementById('fileInput'); 
+
+    const message = document.getElementById('message'); 
+
+ 
+
+    form.addEventListener('submit', async function (e) { 
+
+      e.preventDefault(); 
+
+      message.textContent = ''; 
+
+      message.className = ''; 
+
+ 
+
+      const file = fileInput.files[0]; 
+
+      if (!file) { 
+
+        message.textContent = 'Bitte wählen Sie eine Datei aus.'; 
+
+        message.className = 'error'; 
+
+        return; 
+
+      } 
+
+ 
+
+      // Sicherheitsprüfungen im Frontend 
+
+      if (!ALLOWED_TYPES.includes(file.type)) { 
+
+        message.textContent = 'Dateityp nicht erlaubt. Erlaubt sind: JPG, PNG, PDF, TXT.'; 
+
+        message.className = 'error'; 
+
+        return; 
+
+      } 
+
+      if (file.size > MAX_SIZE) { 
+
+        message.textContent = 'Datei ist zu groß. Maximal erlaubt: 2 MB.'; 
+
+        message.className = 'error'; 
+
+        return; 
+
+      } 
+
+ 
+
+      // Sichere Übertragung über Fetch API (POST, multipart/form-data) 
+
+      const formData = new FormData(); 
+
+      formData.append('file', file); 
+
+ 
+
+      try { 
+
+        const res = await fetch('/upload', { 
+
+          method: 'POST', 
+
+          body: formData, 
+
+          credentials: 'same-origin', 
+
+          headers: { 
+
+            // CSRF-Token falls vorhanden (Beispiel: XSRF-TOKEN) 
+
+            // 'X-CSRF-Token': 'hier-token-einfügen' 
+
+          } 
+
+        }); 
+
+        const result = await res.json(); 
+
+        if (res.ok && result.success) { 
+
+          message.textContent = 'Datei erfolgreich hochgeladen.'; 
+
+          message.className = 'success'; 
+
+        } else { 
+
+          message.textContent = (result.error || 'Fehler beim Hochladen.'); 
+
+          message.className = 'error'; 
+
+        } 
+
+      } catch (err) { 
+
+        message.textContent = 'Netzwerkfehler oder Serverantwort ungültig.'; 
+
+        message.className = 'error'; 
+
+      } 
+
+    }); 
+
+  </script> 
+
+</body> 
+
+</html> 
