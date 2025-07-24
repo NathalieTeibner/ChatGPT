@@ -1,0 +1,303 @@
+<!DOCTYPE html> 
+
+<html lang="de"> 
+
+<head> 
+
+    <meta charset="UTF-8"> 
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+    <title>Sicherer Datei-Upload</title> 
+
+    <style> 
+
+        .upload-container { 
+
+            max-width: 500px; 
+
+            margin: 20px auto; 
+
+            padding: 20px; 
+
+            border: 1px solid #ddd; 
+
+            border-radius: 5px; 
+
+            background-color: #f9f9f9; 
+
+        } 
+
+        .error { 
+
+            color: red; 
+
+            margin-top: 10px; 
+
+        } 
+
+        .success { 
+
+            color: green; 
+
+            margin-top: 10px; 
+
+        } 
+
+    </style> 
+
+</head> 
+
+<body> 
+
+    <div class="upload-container"> 
+
+        <h2>Sicherer Datei-Upload</h2> 
+
+        <form id="uploadForm"> 
+
+            <input type="file" id="fileInput" required> 
+
+            <button type="submit">Hochladen</button> 
+
+        </form> 
+
+        <div id="message"></div> 
+
+    </div> 
+
+ 
+
+    <script> 
+
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) { 
+
+            e.preventDefault(); 
+
+            const fileInput = document.getElementById('fileInput'); 
+
+            const messageDiv = document.getElementById('message'); 
+
+            messageDiv.textContent = ''; 
+
+            messageDiv.className = ''; 
+
+ 
+
+            if (!fileInput.files || fileInput.files.length === 0) { 
+
+                showError('Bitte wählen Sie eine Datei aus.'); 
+
+                return; 
+
+            } 
+
+ 
+
+            const file = fileInput.files[0]; 
+
+             
+
+            // Validierungsschritte 
+
+            if (!validateFile(file)) { 
+
+                return; 
+
+            } 
+
+ 
+
+            try { 
+
+                // In einer echten Anwendung würden Sie die Datei hier an den Server senden 
+
+                // await uploadToServer(file); 
+
+                 
+
+                // Nur zur Demonstration - in der Praxis würden Sie die Datei nicht clientseitig speichern 
+
+                showSuccess(`Datei "${file.name}" wurde erfolgreich validiert und kann hochgeladen werden.`); 
+
+                 
+
+                // Formular zurücksetzen 
+
+                fileInput.value = ''; 
+
+            } catch (error) { 
+
+                showError('Fehler beim Hochladen: ' + error.message); 
+
+            } 
+
+        }); 
+
+ 
+
+        function validateFile(file) { 
+
+            const messageDiv = document.getElementById('message'); 
+
+             
+
+            // Maximale Dateigröße (5MB) 
+
+            const maxSize = 5 * 1024 * 1024; 
+
+            if (file.size > maxSize) { 
+
+                showError('Datei ist zu groß. Maximale Größe: 5MB.'); 
+
+                return false; 
+
+            } 
+
+ 
+
+            // Erlaubte Dateitypen 
+
+            const allowedTypes = [ 
+
+                'image/jpeg', 
+
+                'image/png', 
+
+                'application/pdf', 
+
+                'text/plain', 
+
+                'application/msword', 
+
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+
+            ]; 
+
+             
+
+            if (!allowedTypes.includes(file.type)) { 
+
+                showError('Dateityp nicht erlaubt. Erlaubte Typen: JPEG, PNG, PDF, TXT, DOC, DOCX.'); 
+
+                return false; 
+
+            } 
+
+ 
+
+            // Dateinamen validieren 
+
+            const fileName = file.name; 
+
+            if (!/^[\w\-\. ]+$/.test(fileName)) { 
+
+                showError('Ungültiger Dateiname. Nur Buchstaben, Zahlen, Bindestriche, Punkte und Unterstriche sind erlaubt.'); 
+
+                return false; 
+
+            } 
+
+ 
+
+            // Potenziell gefährliche Dateierweiterungen blockieren 
+
+            const dangerousExtensions = ['.exe', '.bat', '.sh', '.php', '.js', '.jar']; 
+
+            const fileExtension = fileName.substring(fileName.lastIndexOf('.')).toLowerCase(); 
+
+            if (dangerousExtensions.includes(fileExtension)) { 
+
+                showError('Dateierweiterung aus Sicherheitsgründen nicht erlaubt.'); 
+
+                return false; 
+
+            } 
+
+ 
+
+            return true; 
+
+        } 
+
+ 
+
+        function showError(message) { 
+
+            const messageDiv = document.getElementById('message'); 
+
+            messageDiv.textContent = message; 
+
+            messageDiv.className = 'error'; 
+
+        } 
+
+ 
+
+        function showSuccess(message) { 
+
+            const messageDiv = document.getElementById('message'); 
+
+            messageDiv.textContent = message; 
+
+            messageDiv.className = 'success'; 
+
+        } 
+
+ 
+
+        // In einer echten Anwendung würden Sie die Datei an den Server senden 
+
+        async function uploadToServer(file) { 
+
+            // Hier würde der tatsächliche Upload-Code stehen 
+
+            // Wichtig: Der Server muss die Datei ebenfalls validieren! 
+
+             
+
+            // Beispiel mit fetch API: 
+
+            /* 
+
+            const formData = new FormData(); 
+
+            formData.append('file', file); 
+
+             
+
+            const response = await fetch('/upload', { 
+
+                method: 'POST', 
+
+                body: formData, 
+
+                headers: { 
+
+                    'X-CSRF-Token': 'Ihr-CSRF-Token' // Wichtig für CSRF-Schutz 
+
+                } 
+
+            }); 
+
+             
+
+            if (!response.ok) { 
+
+                throw new Error('Serverfehler beim Upload'); 
+
+            } 
+
+             
+
+            return await response.json(); 
+
+            */ 
+
+        } 
+
+    </script> 
+
+</body> 
+
+</html> 
