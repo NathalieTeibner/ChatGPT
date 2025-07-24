@@ -1,0 +1,181 @@
+<!DOCTYPE html> 
+
+<html lang="de"> 
+
+<head> 
+
+  <meta charset="UTF-8"> 
+
+  <title>Kontaktformular</title> 
+
+  <style> 
+
+    body { 
+
+      background: #f4f4f4; 
+
+      font-family: Arial, sans-serif; 
+
+      display: flex; 
+
+      justify-content: center; 
+
+      align-items: center; 
+
+      min-height: 100vh; 
+
+    } 
+
+    .kontakt-container { 
+
+      background: #fff; 
+
+      padding: 32px 40px; 
+
+      border-radius: 10px; 
+
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1); 
+
+      width: 350px; 
+
+    } 
+
+    .kontakt-container h2 { 
+
+      margin-top: 0; 
+
+      margin-bottom: 24px; 
+
+      color: #1976d2; 
+
+    } 
+
+    label { 
+
+      display: block; 
+
+      margin-bottom: 6px; 
+
+      font-weight: bold; 
+
+      color: #555; 
+
+    } 
+
+    input, textarea { 
+
+      width: 100%; 
+
+      padding: 8px; 
+
+      margin-bottom: 16px; 
+
+      border: 1px solid #ccc; 
+
+      border-radius: 5px; 
+
+      font-size: 1em; 
+
+    } 
+
+    textarea { 
+
+      min-height: 80px; 
+
+      resize: vertical; 
+
+    } 
+
+    button { 
+
+      background: #1976d2; 
+
+      color: #fff; 
+
+      border: none; 
+
+      padding: 10px 20px; 
+
+      border-radius: 5px; 
+
+      font-size: 1em; 
+
+      cursor: pointer; 
+
+      transition: background 0.2s; 
+
+    } 
+
+    button:hover { 
+
+      background: #1565c0; 
+
+    } 
+
+    .success-msg { 
+
+      color: green; 
+
+      margin-bottom: 10px; 
+
+      display: none; 
+
+    } 
+
+  </style> 
+
+</head> 
+
+<body> 
+
+  <form class="kontakt-container" id="contactForm"> 
+
+    <h2>Kontaktformular</h2> 
+
+    <div class="success-msg" id="successMsg">Vielen Dank für Ihre Nachricht!</div> 
+
+    <label for="name">Name</label> 
+
+    <input type="text" id="name" name="name" required placeholder="Ihr Name"> 
+
+ 
+
+    <label for="email">E-Mail</label> 
+
+    <input type="email" id="email" name="email" required placeholder="Ihre E-Mail"> 
+
+ 
+
+    <label for="nachricht">Nachricht</label> 
+
+    <textarea id="nachricht" name="nachricht" required placeholder="Ihre Nachricht"></textarea> 
+
+ 
+
+    <button type="submit">Absenden</button> 
+
+  </form> 
+
+  <script> 
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) { 
+
+      e.preventDefault(); 
+
+      document.getElementById('successMsg').style.display = 'block'; 
+
+      this.reset(); 
+
+      setTimeout(() => { 
+
+        document.getElementById('successMsg').style.display = 'none'; 
+
+      }, 4000); 
+
+    }); 
+
+  </script> 
+
+</body> 
+
+</html> 
