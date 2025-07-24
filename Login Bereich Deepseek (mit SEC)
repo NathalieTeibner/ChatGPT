@@ -1,0 +1,329 @@
+<!DOCTYPE html> 
+
+<html lang="de"> 
+
+<head> 
+
+    <meta charset="UTF-8"> 
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+    <title>Mitglieder Login</title> 
+
+    <style> 
+
+        .login-container { 
+
+            max-width: 400px; 
+
+            margin: 50px auto; 
+
+            padding: 20px; 
+
+            border: 1px solid #ddd; 
+
+            border-radius: 5px; 
+
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+
+        } 
+
+        .form-group { 
+
+            margin-bottom: 15px; 
+
+        } 
+
+        label { 
+
+            display: block; 
+
+            margin-bottom: 5px; 
+
+            font-weight: bold; 
+
+        } 
+
+        input { 
+
+            width: 100%; 
+
+            padding: 8px; 
+
+            box-sizing: border-box; 
+
+            border: 1px solid #ddd; 
+
+            border-radius: 4px; 
+
+        } 
+
+        button { 
+
+            background-color: #4CAF50; 
+
+            color: white; 
+
+            padding: 10px 15px; 
+
+            border: none; 
+
+            border-radius: 4px; 
+
+            cursor: pointer; 
+
+            width: 100%; 
+
+        } 
+
+        button:hover { 
+
+            background-color: #45a049; 
+
+        } 
+
+        .error-message { 
+
+            color: red; 
+
+            margin-top: 10px; 
+
+        } 
+
+        .success-message { 
+
+            color: green; 
+
+            margin-top: 10px; 
+
+        } 
+
+    </style> 
+
+</head> 
+
+<body> 
+
+    <div class="login-container"> 
+
+        <h2>Mitglieder Login</h2> 
+
+        <form id="loginForm"> 
+
+            <div class="form-group"> 
+
+                <label for="username">Benutzername:</label> 
+
+                <input type="text" id="username" name="username" required  
+
+                       autocomplete="username" minlength="4" maxlength="20"> 
+
+            </div> 
+
+            <div class="form-group"> 
+
+                <label for="password">Passwort:</label> 
+
+                <input type="password" id="password" name="password" required  
+
+                       autocomplete="current-password" minlength="8" maxlength="64"> 
+
+            </div> 
+
+            <button type="submit" id="loginButton">Einloggen</button> 
+
+            <div id="message" class="error-message" style="display: none;"></div> 
+
+        </form> 
+
+    </div> 
+
+ 
+
+    <script> 
+
+        document.addEventListener('DOMContentLoaded', function() { 
+
+            const loginForm = document.getElementById('loginForm'); 
+
+            const messageDiv = document.getElementById('message'); 
+
+             
+
+            // CSRF-Token generieren (in einer echten Anwendung sollte dieser serverseitig generiert werden) 
+
+            const csrfToken = generateCSRFToken(); 
+
+             
+
+            loginForm.addEventListener('submit', async function(e) { 
+
+                e.preventDefault(); 
+
+                 
+
+                const username = document.getElementById('username').value.trim(); 
+
+                const password = document.getElementById('password').value; 
+
+                 
+
+                // Client-seitige Validierung 
+
+                if (!validateInput(username, password)) { 
+
+                    return; 
+
+                } 
+
+                 
+
+                try { 
+
+                    // Deaktiviere den Button während der Verarbeitung 
+
+                    document.getElementById('loginButton').disabled = true; 
+
+                     
+
+                    // Simuliere eine sichere Server-Anfrage 
+
+                    const response = await simulateServerLogin(username, password, csrfToken); 
+
+                     
+
+                    if (response.success) { 
+
+                        showMessage('Login erfolgreich! Weiterleitung...', 'success'); 
+
+                        // In einer echten Anwendung: Weiterleitung oder Statusänderung 
+
+                    } else { 
+
+                        showMessage('Falscher Benutzername oder Passwort', 'error'); 
+
+                    } 
+
+                } catch (error) { 
+
+                    showMessage('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.', 'error'); 
+
+                    console.error('Login error:', error); 
+
+                } finally { 
+
+                    document.getElementById('loginButton').disabled = false; 
+
+                } 
+
+            }); 
+
+             
+
+            function validateInput(username, password) { 
+
+                // XSS-Prävention: HTML-Tags entfernen 
+
+                const cleanUsername = username.replace(/</g, "&lt;").replace(/>/g, "&gt;"); 
+
+                if (cleanUsername !== username) { 
+
+                    showMessage('Ungültige Zeichen im Benutzernamen', 'error'); 
+
+                    return false; 
+
+                } 
+
+                 
+
+                if (username.length < 4 || username.length > 20) { 
+
+                    showMessage('Benutzername muss zwischen 4 und 20 Zeichen lang sein', 'error'); 
+
+                    return false; 
+
+                } 
+
+                 
+
+                if (password.length < 8) { 
+
+                    showMessage('Passwort muss mindestens 8 Zeichen lang sein', 'error'); 
+
+                    return false; 
+
+                } 
+
+                 
+
+                return true; 
+
+            } 
+
+             
+
+            function showMessage(message, type) { 
+
+                messageDiv.textContent = message; 
+
+                messageDiv.className = type + '-message'; 
+
+                messageDiv.style.display = 'block'; 
+
+            } 
+
+             
+
+            function generateCSRFToken() { 
+
+                // In einer echten Anwendung sollte dieser Token serverseitig generiert und gespeichert werden 
+
+                const array = new Uint32Array(8); 
+
+                window.crypto.getRandomValues(array); 
+
+                return Array.from(array, dec => ('0' + dec.toString(16)).join('').slice(-32); 
+
+            } 
+
+             
+
+            async function simulateServerLogin(username, password, token) { 
+
+                // Simuliere eine Serverantwort mit Verzögerung 
+
+                await new Promise(resolve => setTimeout(resolve, 800)); 
+
+                 
+
+                // In einer echten Anwendung: 
+
+                // - Passwort niemals im Klartext senden, sondern hashen (mit Salt) oder besser: Challenge-Response 
+
+                // - CSRF-Token validieren 
+
+                // - Rate-Limiting gegen Brute-Force-Angriffe implementieren 
+
+                 
+
+                // Hier nur eine Simulation - in der Praxis würde dies serverseitig passieren 
+
+                if (username === "demo" && password === "SicheresPasswort123!") { 
+
+                    return { success: true, token: "simuliertes-jwt-token" }; 
+
+                } else { 
+
+                    return { success: false }; 
+
+                } 
+
+            } 
+
+        }); 
+
+    </script> 
+
+</body> 
+
+</html> 
