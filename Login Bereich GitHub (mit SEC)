@@ -1,0 +1,131 @@
+// Einfache, sichere Login-Implementierung mit Node.js, Express & bcrypt 
+
+ 
+
+const express = require('express'); 
+
+const session = require('express-session'); 
+
+const bcrypt = require('bcrypt'); 
+
+const helmet = require('helmet'); 
+
+const rateLimit = require('express-rate-limit'); 
+
+const bodyParser = require('body-parser'); 
+
+const app = express(); 
+
+ 
+
+app.use(helmet()); 
+
+app.use(bodyParser.json()); 
+
+ 
+
+// Session-Konfiguration (nur über HTTPS in Produktion!) 
+
+app.use(session({ 
+
+  secret: 'DeinSehrSicheresSessionSecret', 
+
+  resave: false, 
+
+  saveUninitialized: false, 
+
+  cookie: { httpOnly: true, secure: false, sameSite: true } 
+
+})); 
+
+ 
+
+// Rate Limiting gegen Brute-Force 
+
+const loginLimiter = rateLimit({ 
+
+  windowMs: 60 * 1000, // 1 Minute 
+
+  max: 5, 
+
+  message: { error: 'Zu viele Login-Versuche. Bitte warte.' } 
+
+}); 
+
+ 
+
+const users = [ 
+
+  // Beispielbenutzer (Passwort: test123) 
+
+  { 
+
+    id: 1, 
+
+    username: 'mitglied', 
+
+    passwordHash: '$2b$10$9tK8uK2Bz2rA6dGxY4pK3uJvJ6H/2R6xZsB2w4zZs1D2P8XnKp8yG' // bcrypt-Hash für 'test123' 
+
+  } 
+
+]; 
+
+ 
+
+// Login-Route 
+
+app.post('/login', loginLimiter, async (req, res) => { 
+
+  const { username, password } = req.body; 
+
+  if(typeof username !== 'string' || typeof password !== 'string') return res.status(400).json({ error: 'Ungültige Eingabe' }); 
+
+ 
+
+  const user = users.find(u => u.username === username); 
+
+  if(!user) return res.status(401).json({ error: 'Login fehlgeschlagen' }); 
+
+ 
+
+  const valid = await bcrypt.compare(password, user.passwordHash); 
+
+  if(!valid) return res.status(401).json({ error: 'Login fehlgeschlagen' }); 
+
+ 
+
+  req.session.userId = user.id; 
+
+  res.json({ message: 'Erfolgreich eingeloggt' }); 
+
+}); 
+
+ 
+
+// Geschützter Bereich 
+
+app.get('/bereich', (req, res) => { 
+
+  if(!req.session.userId) return res.status(401).json({ error: 'Nicht eingeloggt' }); 
+
+  res.json({ message: 'Willkommen im Mitgliederbereich!' }); 
+
+}); 
+
+ 
+
+// Logout 
+
+app.post('/logout', (req, res) => { 
+
+  req.session.destroy(() => { 
+
+    res.json({ message: 'Erfolgreich ausgeloggt' }); 
+
+  }); 
+
+}); 
+
+ 
+
+Common Vulnerabilities and Exposures app.listen(3000, () => console.log('Server läuft auf http://localhost:3000')); 
