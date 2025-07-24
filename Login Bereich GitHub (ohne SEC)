@@ -1,0 +1,155 @@
+<!DOCTYPE html> 
+
+<html lang="de"> 
+
+<head> 
+
+  <meta charset="UTF-8"> 
+
+  <title>Mitglieder Login</title> 
+
+  <style> 
+
+    body { font-family: Arial, sans-serif; background: #f3f3f3; } 
+
+    .login-container { 
+
+      background: #fff; 
+
+      padding: 20px 30px; 
+
+      border-radius: 8px; 
+
+      box-shadow: 0 2px 8px rgba(0,0,0,.1); 
+
+      width: 300px; 
+
+      margin: 100px auto; 
+
+      text-align: center; 
+
+    } 
+
+    input[type=text], input[type=password] { 
+
+      width: 90%; 
+
+      padding: 8px; 
+
+      margin: 10px 0; 
+
+      border: 1px solid #ccc; 
+
+      border-radius: 4px; 
+
+    } 
+
+    button { 
+
+      padding: 10px 20px; 
+
+      background: #007bff; 
+
+      color: #fff; 
+
+      border: none; 
+
+      border-radius: 4px; 
+
+      cursor: pointer; 
+
+    } 
+
+    .error {color: red;} 
+
+    .welcome {color: green;} 
+
+  </style> 
+
+</head> 
+
+<body> 
+
+  <div class="login-container" id="loginBox"> 
+
+    <h2>Mitglieder Login</h2> 
+
+    <div id="errorMsg" class="error"></div> 
+
+    <input type="text" id="username" placeholder="Benutzername" required> 
+
+    <input type="password" id="password" placeholder="Passwort" required> 
+
+    <button onclick="login()">Einloggen</button> 
+
+  </div> 
+
+  <div class="login-container welcome" id="welcomeBox" style="display:none;"> 
+
+    <h2>Willkommen, <span id="userWelcome"></span>!</h2> 
+
+    <button onclick="logout()">Logout</button> 
+
+  </div> 
+
+ 
+
+  <script> 
+
+    // Dummy-Datenbank für Demo-Zwecke 
+
+    const users = [ 
+
+      { username: "mitglied1", password: "passwort123" }, 
+
+      { username: "mitglied2", password: "geheim" } 
+
+    ]; 
+
+ 
+
+    function login() { 
+
+      const uname = document.getElementById('username').value; 
+
+      const pwd = document.getElementById('password').value; 
+
+      const user = users.find(u => u.username === uname && u.password === pwd); 
+
+      if (user) { 
+
+        document.getElementById('loginBox').style.display = 'none'; 
+
+        document.getElementById('welcomeBox').style.display = 'block'; 
+
+        document.getElementById('userWelcome').textContent = uname; 
+
+        document.getElementById('errorMsg').textContent = ''; 
+
+      } else { 
+
+        document.getElementById('errorMsg').textContent = 'Benutzername oder Passwort falsch!'; 
+
+      } 
+
+    } 
+
+ 
+
+    function logout() { 
+
+      document.getElementById('loginBox').style.display = 'block'; 
+
+      document.getElementById('welcomeBox').style.display = 'none'; 
+
+      document.getElementById('username').value = ''; 
+
+      document.getElementById('password').value = ''; 
+
+    } 
+
+  </script> 
+
+</body> 
+
+</html> 
