@@ -1,0 +1,153 @@
+<!DOCTYPE html> 
+
+<html lang="de"> 
+
+<head> 
+
+  <meta charset="UTF-8"> 
+
+  <title>Datei-Upload Bereich</title> 
+
+  <style> 
+
+    .upload-area { 
+
+      border: 2px dashed #ccc; 
+
+      border-radius: 10px; 
+
+      padding: 30px; 
+
+      text-align: center; 
+
+      cursor: pointer; 
+
+      transition: border-color 0.3s; 
+
+      color: #555; 
+
+      margin: 40px auto; 
+
+      max-width: 400px; 
+
+    } 
+
+    .upload-area.dragover { 
+
+      border-color: #1e90ff; 
+
+      background: #f0f8ff; 
+
+    } 
+
+    .file-list { 
+
+      margin-top: 20px; 
+
+      text-align: left; 
+
+      max-width: 400px; 
+
+      margin-left: auto; 
+
+      margin-right: auto; 
+
+    } 
+
+    .file-list li { 
+
+      margin-bottom: 5px; 
+
+    } 
+
+  </style> 
+
+</head> 
+
+<body> 
+
+  <div class="upload-area" id="uploadArea"> 
+
+    <p>Dateien hierher ziehen oder <span style="color:#1e90ff; text-decoration:underline; cursor:pointer;" onclick="document.getElementById('fileInput').click();">Datei auswählen</span></p> 
+
+    <input type="file" id="fileInput" multiple style="display:none;"> 
+
+    <ul class="file-list" id="fileList"></ul> 
+
+  </div> 
+
+  <script> 
+
+    const uploadArea = document.getElementById('uploadArea'); 
+
+    const fileInput = document.getElementById('fileInput'); 
+
+    const fileList = document.getElementById('fileList'); 
+
+  
+
+    // Drag & Drop Events 
+
+    uploadArea.addEventListener('dragover', (e) => { 
+
+      e.preventDefault(); 
+
+      uploadArea.classList.add('dragover'); 
+
+    }); 
+
+  
+
+    uploadArea.addEventListener('dragleave', (e) => { 
+
+      e.preventDefault(); 
+
+      uploadArea.classList.remove('dragover'); 
+
+    }); 
+
+  
+
+    uploadArea.addEventListener('drop', (e) => { 
+
+      e.preventDefault(); 
+
+      uploadArea.classList.remove('dragover'); 
+
+      handleFiles(e.dataTransfer.files); 
+
+    }); 
+
+  
+
+    // File input click handler 
+
+    fileInput.addEventListener('change', () => { 
+
+      handleFiles(fileInput.files); 
+
+    }); 
+
+  
+
+    function handleFiles(files) { 
+
+      fileList.innerHTML = ''; 
+
+      Array.from(files).forEach(file => { 
+
+        const li = document.createElement('li'); 
+
+        li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`; 
+
+        fileList.appendChild(li); 
+
+      }); 
+
+    } 
+
+  </script> 
+
+</body> 
+
+</html> 
